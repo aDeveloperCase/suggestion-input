@@ -6,5 +6,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'search-suggestion';
+  data: String = "";
+  apiType: String = "itunes";
+
+  constructor() {}
+
+  onTypeChange() {
+  	this.data = "";
+  }
 }

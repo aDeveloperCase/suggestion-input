@@ -1,5 +1,12 @@
 # SearchSuggestion
 
+## SuggestionInputComponent
+The SuggestionInputComponent accept the following attributes:
+
+	- [apiType]: the api to query ("itunes" or "brewery")
+	- [suggestionLength]: the max number of the shown suggestions
+	- [charsBeforeSearching]: the min number of characters before showing suggestions
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.4.
 
 ## Development server
