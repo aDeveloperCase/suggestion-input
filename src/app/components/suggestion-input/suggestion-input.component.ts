@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 
 import { SuggestionInputService } from '../../services/suggestion-input.service';
-import { ISuggestionItem } from './suggestion-input.interface';
+import { ISuggestionItem, IItemsCache } from './suggestion-input.interface';
 
 const noop = () => {
 };
@@ -26,22 +26,21 @@ export class SuggestionInputComponent implements ControlValueAccessor, OnChanges
   @Input() apiType: string = 'itunes';
 
 	private innerValue: any = '';
-	private filteredItems: Observable<ISuggestionItem[]>;
 	private onTouchedCallback: () => void = noop;
 	private onChangeCallback: (_: any) => void = noop;
+	private typingTimeout: ReturnType<typeof setTimeout>;
 
-	get value(): any {
+	public filteredItems: ISuggestionItem[];
+	public itemsCache: IItemsCache = {};
+
+	get value(): string {
 		return this.innerValue;
 	}
 
-	set value(v: any) {
+	set value(v: string) {
 		if (v !== this.innerValue) {
 			this.innerValue = v;
 			this.onChangeCallback(v);
-
-	      if (v.length > this.charsBeforeSearching) {
-	        this.filteredItems = this.apiService.search(v, this.suggestionLength, this.apiType);
-	      }
 		}
 	}
 
@@ -50,12 +49,32 @@ export class SuggestionInputComponent implements ControlValueAccessor, OnChanges
   ngOnChanges(changes: SimpleChanges) {
     const apiType: SimpleChange = changes.apiType;
     if (apiType.previousValue !== apiType.currentValue) {
-    	this.filteredItems = of([]);
+    	this.filteredItems = [];
     }
   }
 
-	onBlur() {
+	onFocus() {
 		this.onTouchedCallback;
+	}
+
+	onKeyup(event: KeyboardEvent) {
+		clearTimeout(this.typingTimeout);
+
+		const context = this;
+		this.typingTimeout = setTimeout(function() {
+			
+			if (context.itemsCache[context.value]) {
+
+				context.filteredItems = context.itemsCache[context.value];
+			} else if (context.value.length > context.charsBeforeSearching) {
+
+				context.apiService.search(context.value, context.suggestionLength, context.apiType)
+					.subscribe(data => {
+						context.filteredItems = data;
+						context.itemsCache[context.value] = data;
+					});
+	    }
+		}, 1000);
 	}
 
 	writeValue(value: any) {

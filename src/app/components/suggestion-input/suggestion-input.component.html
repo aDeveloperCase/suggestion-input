@@ -5,11 +5,12 @@
     [matAutocomplete]="auto"
     [(ngModel)]="value"
     #autoCompleteInput
-    placeholder="Type something..." 
-    (blur)="onBlur()">
+    placeholder="Type something..."
+    (keyup)="onKeyup()"
+    (focus)="onFocus()">
 
   <mat-autocomplete #auto="matAutocomplete">
-    <mat-option *ngFor="let item of filteredItems | async"
+    <mat-option *ngFor="let item of filteredItems"
       [value]="item.name"
       (click)="writeValue(item.name)">
       <ng-container *ngIf="apiType === 'itunes'">
