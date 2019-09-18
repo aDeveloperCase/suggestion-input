@@ -1,4 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync, inject, discardPeriodicTasks } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 
@@ -14,7 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { SuggestionInputComponent } from './suggestion-input.component';
-import { SuggestionInputService } from '../../services/suggestion-input.service';
+import { ISearchService } from './suggestion-input.interface';
+import { ITunesService } from '../../services/itunes.service';
 
 const responseMock = [
   {image: "aaa", name: "bbb - ccc"},
@@ -24,10 +26,10 @@ const responseMock = [
   {image: "aaa", name: "bbb - ccc"}
 ];
 
-describe('SuggestionInputComponent', () => {
+fdescribe('SuggestionInputComponent', () => {
   let component: SuggestionInputComponent;
   let fixture: ComponentFixture<SuggestionInputComponent>;
-  let suggestionInputService: SuggestionInputService;
+  // let apiService: ISearchService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -40,17 +42,18 @@ describe('SuggestionInputComponent', () => {
         MatRadioModule,
         FormsModule,
         HttpClientModule,
+        HttpClientTestingModule,
         BrowserAnimationsModule
       ],
       providers: [
-        SuggestionInputService
+        ITunesService
       ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    suggestionInputService = TestBed.get(SuggestionInputService);
+    // apiService = TestBed.get(ITunesService);
     fixture = TestBed.createComponent(SuggestionInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -60,17 +63,22 @@ describe('SuggestionInputComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('suggestions work and service is called', async () => {
-    let spy = spyOn(suggestionInputService, 'search').and.returnValue(of(responseMock));
+  it('suggestions work and service is called', inject([ITunesService], <any>fakeAsync ((apiService: ITunesService) => {
+    component.apiService = apiService;
+    let spy = spyOn(component.apiService, 'search').and.returnValue(of(responseMock));
 
     let input = fixture.debugElement.query(By.css('input'));
     let el = input.nativeElement;
 
     el.value = 'hello';
     el.dispatchEvent(new Event('input'));
+    el.dispatchEvent(new Event('keyup'));
 
     expect(fixture.componentInstance.value).toBe('hello');
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(0)
+
+    tick(1050);
+    expect(spy).toHaveBeenCalledTimes(1);
 
     el.click();
 
@@ -83,5 +91,7 @@ describe('SuggestionInputComponent', () => {
 
     fixture.detectChanges();
     expect(fixture.componentInstance.value).toBe(responseMock[0].name);
-  });
+
+    discardPeriodicTasks();
+  })));
 });

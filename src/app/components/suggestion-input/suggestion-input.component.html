@@ -13,13 +13,8 @@
     <mat-option *ngFor="let item of filteredItems"
       [value]="item.name"
       (click)="writeValue(item.name)">
-      <ng-container *ngIf="apiType === 'itunes'">
-        <img class="example-option-img" aria-hidden [src]="item.image" height="25">
-        <span>{{item.name}}</span>
-      </ng-container>
-      <ng-container *ngIf="apiType === 'brewery'">
-        <span>{{item.name}}</span>
-      </ng-container>
+      <ng-template [ngTemplateOutlet]="templateVariable"
+        [ngTemplateOutletContext]="{item: item}"></ng-template>
     </mat-option>
   </mat-autocomplete>
 </mat-form-field>

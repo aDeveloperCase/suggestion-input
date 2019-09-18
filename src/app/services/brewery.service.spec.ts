@@ -22,11 +22,12 @@ describe('BreweryService', () => {
 		});
 
 	  it('should be called correctly', () => {
-	    const responseMock = { data: true };
+	    const responseMock = [1, 2, 3, 4, 5, 6, 7];
+	    const limit = 3;
 	    const query = "hello";
 
-	    service.search(query).subscribe(res => {
-	    	expect(res).toBe(responseMock);
+	    service.search(query, limit).subscribe(res => {
+	    	expect(res.length).toBe(limit);
 	    });
 
 	    const url = `${service.breweryUrl}?query=${query}`;

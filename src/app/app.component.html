@@ -2,10 +2,15 @@
 <suggestion-input [(ngModel)]="data"
 	[suggestionLength]="4"
 	[charsBeforeSearching]="3"
-	[apiType]="apiType"></suggestion-input>
+	[apiService]="apiService">
+    <ng-template let-item="item">
+      	<img *ngIf="apiType === API_ITUNES" class="example-option-img" aria-hidden [src]="item?.image" height="25">
+        <span>{{item?.name}}</span>
+    </ng-template>
+</suggestion-input>
 	
 <mat-radio-group [(ngModel)]="apiType"
 	(change)="onTypeChange()" aria-label="Select an option">
-  <mat-radio-button name="api-type" value="itunes">ITunes</mat-radio-button>
-  <mat-radio-button name="api-type" value="brewery">Brawery</mat-radio-button>
+  <mat-radio-button name="api-type" [value]="API_ITUNES">ITunes</mat-radio-button>
+  <mat-radio-button name="api-type" [value]="API_BREWERY">Brawery</mat-radio-button>
 </mat-radio-group>

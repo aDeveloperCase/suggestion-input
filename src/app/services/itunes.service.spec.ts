@@ -22,17 +22,34 @@ describe('ITunesService', () => {
 		});
 
 	  it('should be called correctly', () => {
-	    const responseMock = { data: true };
+	    const dataMock = {
+	    	resultCount: 5,
+	    	results: [
+		  		{artworkUrl60: "aaa", trackName: "bbb", artistName: "ccc"},
+		  		{artworkUrl60: "aaa", trackName: "bbb", artistName: "ccc"},
+		  		{artworkUrl60: "aaa", trackName: "bbb", artistName: "ccc"},
+		  		{artworkUrl60: "aaa", trackName: "bbb", artistName: "ccc"},
+		  		{artworkUrl60: "aaa", trackName: "bbb", artistName: "ccc"}
+	  		]
+	  	};
+	  	const responseMock = [
+	  		{image: "aaa", name: "bbb - ccc"},
+	  		{image: "aaa", name: "bbb - ccc"},
+	  		{image: "aaa", name: "bbb - ccc"},
+	  		{image: "aaa", name: "bbb - ccc"},
+	  		{image: "aaa", name: "bbb - ccc"}
+	  	];
+	    // const responseMock = { data: true };
 	    const limit = 7;
 	    const term = "hello";
 
 	    service.search(term, limit).subscribe(res => {
-	    	expect(res).toBe(responseMock);
+	    	expect(res).toEqual(responseMock);
 	    });
 
 	    const url = `${service.iTunesUrl}?limit=${limit}&term=${term}`;
 	    const req = httpMock.expectOne(url);
-	    req.flush(responseMock);
+	    req.flush(dataMock);
 	  });
 	});
 });
