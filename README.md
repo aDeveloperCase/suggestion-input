@@ -3,7 +3,7 @@
 ## SuggestionInputComponent
 The SuggestionInputComponent accept the following attributes:
 
-	- [apiType]: the api to query ("itunes" or "brewery")
+	- [apiService]: a service that implements the ISearchService interface
 	- [suggestionLength]: the max number of the shown suggestions
 	- [charsBeforeSearching]: the min number of characters before showing suggestions
 
